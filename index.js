@@ -4,7 +4,8 @@ const app = express();
 const cors = require("cors");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const connectDatabase = require('./db/DataBase.js');
-const Payment = require("./models/payment.js")
+const Payment = require("./models/payment.js");
+const { baseUrlCancel, baseUrlSuccess } = require("./baseUrl.js");
 
 connectDatabase();
 
@@ -36,8 +37,8 @@ app.post("/api/create-checkout-session",async(req,res)=>{
             payment_method_types:["card"],
             line_items:lineItems,
             mode:"payment",
-            success_url:"https://payment-app-u46z.vercel.app/",
-            cancel_url:"https://payment-app-u46z.vercel.app/cancel",
+            success_url:`${baseUrlSuccess}`,
+            cancel_url:`${baseUrlCancel}`,
         });
 
         if(!isAuthentic){
