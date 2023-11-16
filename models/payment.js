@@ -7,7 +7,20 @@ const paymentSchema = new mongoose.Schema(
         userAccount: {
             type: String,
             ref: "UserAccount",
-          }
+        },
+        userEmail:{
+            type: String,
+            ref: "email"
+        },
+        customerId:{
+            type: String
+        },
+        customerName:{
+            type: String
+        },
+        paymentRefund:{
+            type: String
+        }
     },
     {
         timestamps: true,
