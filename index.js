@@ -126,11 +126,20 @@ const pay = async (customer, data)=>{
 
 app.post('/api/refundPayment-st', async(req,res)=>{
     try {
+        const {userEmail} = req.body.userEmail;
+        const findUser = await Payment.findOne(userEmail);
+        // console.log(findUser.paymentRefund)
+        const pay_intent = findUser.paymentRefund
         const refund = await stripe.refunds.create({
-            payment_intent: 'pi_3OD4fxSGgPa6DtpS0sqvBbeO',
+            payment_intent: pay_intent,
         });
-        console.log('Refund processed:', refund);
-        return refund;
+
+        const deleteaUser = await Payment.findOneAndDelete(userEmail);
+        // // console.log('Refund processed:', refund.status);
+        if(refund.status){
+            console.log("Done")
+        }
+        res.json({refund,deleteaUser})
     } catch (error) {
         console.log(error);
     }
