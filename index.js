@@ -149,19 +149,18 @@ const cryptoPaymentAdmin = async(customer,data)=>{
   try {
     const tok = await customer.metadata.cart;
     let cartData = JSON.parse(tok);
-    const faitPrice = cartData.tokenPrice*10**8;
+    const fiatPrice = cartData.tokenPrice*10**8;
     const provider = new ethers.JsonRpcProvider(url);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY,provider);
     const signer = wallet.connect(provider);
     const tokenPresaleContract = new ethers.Contract(tokenPresaleaddress, tokenPresale.abi, provider)
     const tokenPresaleContractWithSigner = tokenPresaleContract.connect(signer);
-    const RecieveTokens = await tokenPresaleContractWithSigner.registerFiatUsers(signer.address,faitPrice);
+    const RecieveTokens = await tokenPresaleContractWithSigner.registerFiatUsers(signer.address,fiatPrice);
     const buyReciept = await RecieveTokens.wait();
     console.log(tokenPresaleContractWithSigner);
   } catch (error) {
     console.log(error);
   }
-  console.log(faitPrice);
 };
 
 // Payment Refund API
