@@ -13,21 +13,6 @@ const tokenPresale = require('./abi/TokenPreSale.json')
 connectDatabase();
 const tokenPresaleaddress = process.env.TOKENPRESALEADDRESS;
 
-// app.get('/',async(req,res)=>{
-//   try {
-//     const provider = new ethers.JsonRpcProvider(url);
-//     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY,provider);
-//     const signer = wallet.connect(provider);
-//     const tokenPresaleContract = new ethers.Contract(tokenPresaleaddress, tokenPresale.abi, provider)
-//     const tokenPresaleContractWithSigner = tokenPresaleContract.connect(signer);
-//     const RecieveTokens = await tokenPresaleContractWithSigner.registerFiatUsers(signer.address, );
-//     const buyReciept = await RecieveTokens.wait();
-//     console.log(tokenPresaleContractWithSigner);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })
-
 //Stripe
 app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, res) => {
   let data;
@@ -88,7 +73,7 @@ app.use(cors());
 app.post("/api/create-checkout-session",async(req,res)=>{
   try {
       const {products} = req.body;
-      console.log(products);
+      // console.log(products);
 
       const customer = await stripe.customers.create({
           metadata: {
@@ -164,26 +149,68 @@ const cryptoPaymentAdmin = async(customer,data)=>{
 };
 
 // Payment Refund API
-app.post('/api/refundPayment-st', async(req,res)=>{
-    try {
-        const {userEmail} = req.body.userEmail;
-        const findUser = await Payment.findOne(userEmail);
-        const pay_intent = findUser.paymentRefund
+// app.post('/api/refundPayment-fiat', async(req,res)=>{
+//     try {
+//         const {userEmail} = req.body.userEmail;
+//         const findUser = await Payment.findOne(userEmail);
+//         const pay_intent = findUser.paymentRefund
 
-        const refund = await stripe.refunds.create({
-            payment_intent: pay_intent,
-        });
+//         const refund = await stripe.refunds.create({
+//             payment_intent: pay_intent,
+//         });
 
-        const deleteaUser = await Payment.findOneAndDelete(userEmail);
-        if(refund.status){
-            console.log("Refund Done")
-        }
+//         const deleteUser = await Payment.findOneAndDelete(userEmail);
+//         if(!deleteUser===true){
+//           console.log("delete user")
+//         } else{
+//           console.log("Not found User");
+//         }
+//         if(refund.status){
+//             console.log("Refund Done")
+//         }
         
-        res.json({refund,deleteaUser})
-    } catch (error) {
-        console.log(error);
-    }
-})
+//         res.json({refund})
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
+
+
+app.post('/api/refundPayment-fiat', async (req, res) => {
+  try {
+      const { userEmail } = req.body;
+      const findUser = await Payment.findOne({ userEmail });
+      
+      if (findUser) {
+          const pay_intent = findUser.paymentRefund;
+
+          const refund = await stripe.refunds.create({
+              payment_intent: pay_intent,
+          });
+
+          // Delete the user
+          const deleteUser = await Payment.deleteOne({ userEmail });
+
+          if (deleteUser.deletedCount > 0) {
+              console.log("User deleted");
+          } else {
+              console.log("User not found");
+          }
+
+          if (refund.status) {
+              console.log("Refund Done");
+          }
+
+          res.json({ refund });
+      } else {
+          console.log("User not found");
+          res.status(404).json({ error: "User not found" });
+      }
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 app.listen(7000,()=>{

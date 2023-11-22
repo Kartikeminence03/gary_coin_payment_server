@@ -32,6 +32,21 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
 
 
 
+// app.get('/',async(req,res)=>{
+//   try {
+//     const provider = new ethers.JsonRpcProvider(url);
+//     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY,provider);
+//     const signer = wallet.connect(provider);
+//     const tokenPresaleContract = new ethers.Contract(tokenPresaleaddress, tokenPresale.abi, provider)
+//     const tokenPresaleContractWithSigner = tokenPresaleContract.connect(signer);
+//     const RecieveTokens = await tokenPresaleContractWithSigner.registerFiatUsers(signer.address, );
+//     const buyReciept = await RecieveTokens.wait();
+//     console.log(tokenPresaleContractWithSigner);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
+
 
 
 
