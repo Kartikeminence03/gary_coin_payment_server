@@ -84,7 +84,7 @@ app.post("/api/create-checkout-session",async(req,res)=>{
   
       const lineItems = products.map((product)=>({
           price_data:{
-              currency:"inr",
+              currency:"usd",
               product_data:{
                   name:product.tokenPrice,
               },
@@ -147,33 +147,6 @@ const cryptoPaymentAdmin = async(customer,data)=>{
     console.log(error);
   }
 };
-
-// Payment Refund API
-// app.post('/api/refundPayment-fiat', async(req,res)=>{
-//     try {
-//         const {userEmail} = req.body.userEmail;
-//         const findUser = await Payment.findOne(userEmail);
-//         const pay_intent = findUser.paymentRefund
-
-//         const refund = await stripe.refunds.create({
-//             payment_intent: pay_intent,
-//         });
-
-//         const deleteUser = await Payment.findOneAndDelete(userEmail);
-//         if(!deleteUser===true){
-//           console.log("delete user")
-//         } else{
-//           console.log("Not found User");
-//         }
-//         if(refund.status){
-//             console.log("Refund Done")
-//         }
-        
-//         res.json({refund})
-//     } catch (error) {
-//         console.log(error);
-//     }
-// })
 
 
 app.post('/api/refundPayment-fiat', async (req, res) => {
