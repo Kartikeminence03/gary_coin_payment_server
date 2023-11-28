@@ -50,5 +50,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
 
 
 
+# STRIPE_WEB_HOOK = 'whsec_dd44a782d46661808b62e479f949ee12845b2aea987ab9265f83e9573eaed0c8'
+
 ./stripe login
 ./stripe listen --forward-to localhost:7000/api/webhook
