@@ -4,6 +4,9 @@ const paymentSchema = new mongoose.Schema(
     {
         totalAmount:Number,
         totalTokenEth:Number,
+        currency:{
+            type:String
+        },
         userAccount: {
             type: String,
             ref: "UserAccount",

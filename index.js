@@ -12,6 +12,7 @@ const tokenPresale = require('./abi/TokenPreSale.json')
 
 connectDatabase();
 const tokenPresaleaddress = process.env.TOKENPRESALEADDRESS;
+let stripeWebhookErr;
 
 //Stripe
 app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, res) => {
@@ -61,7 +62,10 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
           console.log(err,"EEEEEEEEEEE>>>>>>>>>>>>");
         }
       })
-      .catch((err) => console.log(err.message,"<<<<<<<<<======>>>>>>>>>>>"));
+      .catch((err) => {
+        console.log(err.message,"<<<<<<<<<======>>>>>>>>>>>")
+        stripeWebhookErr= err
+      });
   }
 
   res.status(200).end();
@@ -73,7 +77,7 @@ app.use(cors());
 app.post("/api/create-checkout-session",async(req,res)=>{
   try {
       const {products} = req.body;
-      // console.log(products);
+      // console.log(products[0]);
 
       const customer = await stripe.customers.create({
           metadata: {
@@ -112,8 +116,10 @@ app.post("/api/create-checkout-session",async(req,res)=>{
 const pay = async (customer, data)=>{
     const tok = await customer.metadata.cart;
     let cartData = JSON.parse(tok);
+    // console.log(customer);
      const paydb = new Payment({
         totalAmount:data.amount_total/100,
+        currency:cartData.crypto,
         totalTokenEth:cartData.toETH,
         userAccount:cartData.userAccount,
         customerName:data.customer_details.name,
@@ -134,7 +140,7 @@ const cryptoPaymentAdmin = async(customer,data)=>{
   try {
     const tok = await customer.metadata.cart;
     let cartData = JSON.parse(tok);
-    const fiatPrice = cartData.tokenPrice*10**8;
+    const fiatPrice = BigInt(cartData.tokenPrice*10**8);
     const provider = new ethers.JsonRpcProvider(url);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY,provider);
     const signer = wallet.connect(provider);
