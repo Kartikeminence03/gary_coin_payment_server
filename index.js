@@ -21,7 +21,6 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
 
   // Check if webhook signing is configured.
   const webhookSecret = process.env.STRIPE_WEB_HOOK;
-  // console.log({ webhookSecret })
 
   if (webhookSecret) {
     // Retrieve the event by verifying the signature using the raw body and secret.
@@ -58,7 +57,6 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
           pay(customer, data);
           cryptoPaymentAdmin(customer,data)
         } catch (err) {
-          console.log(typeof pay,"PPPPPPPPP<<<<<<<<<<");
           console.log(err,"EEEEEEEEEEE>>>>>>>>>>>>");
         }
       })
@@ -77,7 +75,6 @@ app.use(cors());
 app.post("/api/create-checkout-session",async(req,res)=>{
   try {
       const {products} = req.body;
-      // console.log(products[0]);
 
       const customer = await stripe.customers.create({
           metadata: {
@@ -116,7 +113,6 @@ app.post("/api/create-checkout-session",async(req,res)=>{
 const pay = async (customer, data)=>{
     const tok = await customer.metadata.cart;
     let cartData = JSON.parse(tok);
-    // console.log(customer);
      const paydb = new Payment({
         totalAmount:data.amount_total/100,
         currency:cartData.crypto,
@@ -129,13 +125,12 @@ const pay = async (customer, data)=>{
     })
     try {
         const savedPayment = await paydb.save();
-        // console.log("Processed Order:");
       } catch (err) {
         console.log(err);
       }
 };
 
-
+//Crypto Payment Admin function
 const cryptoPaymentAdmin = async(customer,data)=>{
   try {
     const tok = await customer.metadata.cart;
