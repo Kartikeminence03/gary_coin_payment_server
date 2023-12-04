@@ -189,9 +189,9 @@ app.post('/api/refundPayment-fiat', async (req, res) => {
 
 app.post('/api/send-message',async(req,res)=>{
   try {
-    const {firstName,lastName,phone,perEmail,digiMessage} = req.body;
+    const {contact} = req.body;
     const email = 'kartik.eminence@gmail.com ';
-    const resetURL = `<h1>Hi DigiSoul</h1> <h4>Message: ${digiMessage}</h4> <p>Name: ${firstName} ${lastName}</p> <p>Phone Number: ${phone}</p> <p>Email: ${perEmail}</p>`;
+    const resetURL = `<h1>Hi DigiSoul</h1> <h4>Message: ${contact.digiMessage}</h4> <p>Name: ${contact.firstName} ${contact.lastName}</p> <p>Phone Number: ${contact.phone}</p> <p>Email: ${contact.perEmail}</p>`;
     const data = {
       to: email,
       text: "Hey User",
@@ -204,7 +204,7 @@ app.post('/api/send-message',async(req,res)=>{
     res.json({error})
   }
 
-  // console.log(data);
+  // console.log(contact);
 })
 
 
