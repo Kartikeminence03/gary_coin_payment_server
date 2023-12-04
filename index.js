@@ -8,7 +8,8 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const connectDatabase = require('./db/DataBase.js');
 const Payment = require("./models/payment.js");
 const { baseUrlCancel, baseUrlSuccess } = require("./baseUrl.js");
-const tokenPresale = require('./abi/TokenPreSale.json')
+const tokenPresale = require('./abi/TokenPreSale.json');
+const sendEmail = require("./emailMessage.js");
 
 connectDatabase();
 const tokenPresaleaddress = process.env.TOKENPRESALEADDRESS;
@@ -185,6 +186,26 @@ app.post('/api/refundPayment-fiat', async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post('/api/send-message',async(req,res)=>{
+  try {
+    const {firstName,lastName,phone,perEmail,digiMessage} = req.body;
+    const email = 'kartik.eminence@gmail.com ';
+    const resetURL = `<h1>Hi DigiSoul</h1> <h4>Message: ${digiMessage}</h4> <p>Name: ${firstName} ${lastName}</p> <p>Phone Number: ${phone}</p> <p>Email: ${perEmail}</p>`;
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Message to DigiSoul.",
+      html: resetURL,
+    };
+    sendEmail(data);
+    res.json({message:"Email is send to ka...com"})
+  } catch (error) {
+    res.json({error})
+  }
+
+  // console.log(data);
+})
 
 
 app.listen(7000,()=>{
